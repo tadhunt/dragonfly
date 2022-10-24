@@ -26,7 +26,7 @@ func (uc UserConfig) listenerFunc(conf Config) (Listener, error) {
 		StatusProvider:         statusProvider{name: conf.Name},
 		AuthenticationDisabled: conf.AuthDisabled,
 		ResourcePacks:          conf.Resources,
-		Biomes:                 biomes(),
+		Biomes:                 Biomes(),
 		TexturePacksRequired:   conf.ResourcesRequired,
 	}
 	l, err := cfg.Listen("raknet", uc.Network.Address)

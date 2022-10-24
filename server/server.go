@@ -547,7 +547,7 @@ type sporingBiome interface {
 
 // biomes builds a mapping of all biome definitions of the server, ready to be set in the biomes field of the server
 // listener.
-func biomes() map[string]any {
+func Biomes() map[string]any {
 	definitions := make(map[string]any)
 	for _, b := range world.Biomes() {
 		definition := map[string]any{
