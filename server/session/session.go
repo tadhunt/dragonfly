@@ -400,6 +400,13 @@ func (s *Session) changeDimension(dim int32, silent bool) {
 	s.writePacket(&packet.ChangeDimension{Dimension: dim, Position: vec64To32(s.c.Position().Add(entityOffset(s.c)))})
 	s.writePacket(&packet.StopSound{StopAll: silent})
 	s.writePacket(&packet.PlayStatus{Status: packet.PlayStatusPlayerSpawn})
+
+	// As of v1.19.50, the dimension ack that is meant to be sent by the client is now sent by the server. The client
+	// still sends the ack, but after the server has sent it. Thanks to Mojang for another groundbreaking change.
+	s.writePacket(&packet.PlayerAction{
+		EntityRuntimeID: selfEntityRuntimeID,
+		ActionType:      protocol.PlayerActionDimensionChangeDone,
+	})
 }
 
 // handlePacket handles an incoming packet, processing it accordingly. If the packet had invalid data or was
@@ -516,7 +523,7 @@ type actorIdentifier struct {
 func (s *Session) sendAvailableEntities() {
 	var identifiers []actorIdentifier
 	for _, entity := range world.Entities() {
-		identifiers = append(identifiers, actorIdentifier{ID: entity.EncodeEntity()})
+		identifiers = append(identifiers, actorIdentifier{ID: entity.Type().EncodeEntity()})
 	}
 	serializedEntityData, err := nbt.Marshal(map[string]any{"idlist": identifiers})
 	if err != nil {
